@@ -31,4 +31,26 @@ describe('createUiDef tests', () => {
             fileJSONObject.should.have.property('$schema');
         });
     });
+
+    it('handler must match schema', () => {
+        createUiDefFiles.forEach(f => {
+            var fileString = fs.readFileSync(f, {
+                encoding: 'utf8'
+            }).trim();
+            var fileJSONObject = JSON.parse(fileString);
+            fileJSONObject.should.have.property('handler','Microsoft.Compute.MultiVm');
+        });
+    });
+
+    it('version must match schema version', () => {
+        createUiDefFiles.forEach(f => {
+            var fileString = fs.readFileSync(f, {
+                encoding: 'utf8'
+            }).trim();
+            var fileJSONObject = JSON.parse(fileString);
+            fileJSONObject.should.have.property('$schema');
+            var createUiDefSchemaVersion = fileJSONObject.$schema.match('schema.management.azure.com/schemas/(.*)/CreateUIDefinition')[1]
+            fileJSONObject.should.have.property('version', createUiDefSchemaVersion);
+        });
+    });
 });
