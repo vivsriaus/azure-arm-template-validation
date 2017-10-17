@@ -130,4 +130,16 @@ describe('createUiDef tests', () => {
             });
         });
     });
+
+    it('location must be in outputs, and should match [location()]', () => {
+        createUiDefFiles.forEach(f => {
+            var fileString = fs.readFileSync(f, {
+                encoding: 'utf8'
+            }).trim();
+            var fileJSONObject = JSON.parse(fileString);
+            fileJSONObject.should.have.property('parameters');
+            fileJSONObject.parameters.should.have.property('outputs');
+            fileJSONObject.parameters.outputs.should.have.property('location','[location()]');
+        });
+    });
 });
