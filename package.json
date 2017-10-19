@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "A package file for developer depenedencies when validating solution templates",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "mochaTest": "mocha"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
