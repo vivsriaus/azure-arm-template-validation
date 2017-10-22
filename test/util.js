@@ -1,25 +1,19 @@
-const filesFolder = './';
 var fs = require('fs');
+var lineColumn = require("line-column");
 var path = require('path');
-
-var read = require('fs-readdir-recursive');
 var chai = require('chai');  
 var assert = chai.assert;    // Using Assert style
 var expect = chai.expect;    // Using Expect style
 var should = chai.should();  // Using Should style
+var _this = this;
 
 var createUiDefFileName = "createuidefinition.json";
 var mainTemplateFileName = "maintemplate.json";
 
-// Recursively get all files
-// var files = read(filesFolder, function(x) {
-//     return x !== 'node_modules' && x !== '.git' && x !== '.stripped';
-// });
-
-// var files = fs.readdirSync(filesFolder);
-// console.log(files);
-
 function getFiles(folder, fileType) {
+    if (folder == './') {
+        folder = __dirname + '/../';
+    }
     return fs.readdirSync(folder).filter(function(file) {
         return file.toLowerCase().indexOf(fileType) !== -1;
     });
@@ -28,44 +22,56 @@ function getFiles(folder, fileType) {
 // Get create ui def file
 exports.getCreateUiDefFile = function getCreateUiDefFile(folder) {
     var createUiDefFiles = getFiles(folder, createUiDefFileName);
-    createUiDefFiles.length.should.equals(1, 'Only one createUiDefinition.json file should exist, but found ' + createUiDefFiles.length + ' file(s)');
-    return path.resolve(folder, createUiDefFiles[0]);
-};
-
-exports.getCreateUiDefFileJSONObject = function getCreateUiDefFileJSONObject(folder) {
-    var createUiDefFiles = getFiles(folder, createUiDefFileName);
-    createUiDefFiles.length.should.equals(1, 'Only one createUiDefinition.json file should exist, but found ' + createUiDefFiles.length + ' file(s)');
+    createUiDefFiles.length.should.equals(1, 'Only one createUiDefinition.json file should exist, but found ' + createUiDefFiles.length + ' file(s) in path ' + folder);
     var fileString = fs.readFileSync(path.resolve(folder, createUiDefFiles[0]), {
             encoding: 'utf8'
         }).trim();
-    return JSON.parse(fileString);
+    return {
+        file: path.resolve(folder, createUiDefFiles[0]),
+        jsonObject: JSON.parse(fileString)
+    };
 };
 
-var createUiDefFileJSONObject = function() {
-    var fileString = fs.readFileSync(getCreateUiDefFile(), {
+// Get main template file
+exports.getMainTemplateFile = function getMainTemplateFile(folder) {
+    var mainTemplateFiles = getFiles(folder, mainTemplateFileName);
+    mainTemplateFiles.length.should.equals(1, 'Only one mainTemplate.json file should exist, but found ' + mainTemplateFiles.length + ' file(s)');
+    var fileString = fs.readFileSync(path.resolve(folder, mainTemplateFiles[0]), {
             encoding: 'utf8'
         }).trim();
-    return JSON.parse(fileString);
-};
-
-// Get only main template files
-exports.getMainTemplateFile = function getMainTemplateFile() {
-    var mainTemplateFiles = getFiles(mainTemplateFileName);
-    mainTemplateFiles.length.should.equals(1, 'Only one mainTemplate.json file should exist');
-    return mainTemplateFiles[0];
+    return {
+        file: path.resolve(folder, mainTemplateFiles[0]),
+        jsonObject: JSON.parse(fileString)
+    };
 };
 
 // verify directory contains the file
-exports.assertMainTemplateExists = function assertMainTemplateExists(dir) {
-    var mainTemplateFile = read(dir).filter(function(file) {
-        return file.toLowerCase().indexOf(mainTemplateFileName) !== -1;
-    });
-    mainTemplateFile.length.should.equals(1, 'Only one mainTemplate.json file should exist, but found ' + mainTemplateFile.length + ' files(s)');
-}
+exports.assertMainTemplateExists = function assertMainTemplateExists(folder) {
+    _this.getMainTemplateFile(folder);
+};
 
-// gets path to mainTemplate.json in given directory
-exports.getMainTemplateInDir = function getMainTemplateInDir(dir) {
-    return read(dir).filter(function(file) {
-        return file.toLowerCase().indexOf(mainTemplateFileName) !== -1;
-    });
-}
+// verify directory contains the file
+exports.assertCreateUiDefExists = function assertCreateUiDefExists(folder) {
+    _this.getCreateUiDefFile(folder);
+};
+
+// for now, get position of name element in file, so better error message can be thrown
+exports.getPosition = function getPosition(obj, file) {
+    var fileString = fs.readFileSync(file, {
+            encoding: 'utf8'
+        }).trim();
+
+    // get the object "name"
+    var stringToSearch;
+    for (var key in obj) {
+        if(key.toLowerCase() == 'name') {
+            stringToSearch = '"name": "' + obj[key] + '"';
+        }
+    }
+    var ind = fileString.indexOf(stringToSearch);
+    var lc = lineColumn(fileString).fromIndex(ind);
+    if(lc) {
+        return lc.line
+    }
+    return 'UNIDENTIFIED';
+};

@@ -20,6 +20,7 @@
     "fs-readdir-recursive": "^1.0.0",
     "grunt-mocha-cli": "^2.0.0",
     "json-parser": "^1.1.5",
+    "line-column": "^1.0.2",
     "mocha": "^2.3.3",
     "recursive-readdir": "^2.2.1",
     "should": "^13.1.2"

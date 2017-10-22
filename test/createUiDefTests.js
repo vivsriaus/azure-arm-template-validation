@@ -1,10 +1,7 @@
 var assert = require('assert');
 var util = require('./util');
-
 const filesFolder = './';
-var fs = require('fs');
 var path = require('path');
-var read = require('fs-readdir-recursive');
 var chai = require('chai');  
 var assert = chai.assert;    // Using Assert style
 var expect = chai.expect;    // Using Expect style
@@ -12,14 +9,18 @@ var should = chai.should();  // Using Should style
 
 var folder = process.env.npm_config_folder || filesFolder;
 
-var createUiDefFileJSONObject = util.getCreateUiDefFileJSONObject(folder);
-var createUiDefFile = util.getCreateUiDefFile(folder);
+var createUiDefFileJSONObject = util.getCreateUiDefFile(folder).jsonObject;
+var createUiDefFile = util.getCreateUiDefFile(folder).file;
 
 chai.use(function (_chai, _) {
   _chai.Assertion.addMethod('withMessage', function (msg) {
     _.flag(this, 'message', msg);
   });
 });
+
+function getErrorMessage(obj) {
+    return 'json object with \'name\' at line number ' + util.getPosition(obj, createUiDefFile) + ' is missing the regex property under constraints';
+}
 
 describe('createUiDef tests', () => {
     it('must have a schema property', () => {
@@ -42,11 +43,7 @@ describe('createUiDef tests', () => {
         util.assertMainTemplateExists(currentDir);
 
         // get the corresponding main template
-        var mainTemplateFile = path.join(currentDir, util.getMainTemplateInDir(currentDir)[0]);
-        var mainTemplateFileString = fs.readFileSync(mainTemplateFile, {
-            encoding: 'utf8'
-        }).trim();
-        var mainTemplateJSONObject = JSON.parse(mainTemplateFileString);
+        var mainTemplateJSONObject = util.getMainTemplateFile(currentDir).jsonObject;
 
         // get parameter keys in main template
         var parametersInTemplate = Object.keys(mainTemplateJSONObject.parameters);
@@ -56,7 +53,7 @@ describe('createUiDef tests', () => {
         createUiDefFileJSONObject.parameters.should.have.property('outputs');
         var outputsInCreateUiDef = Object.keys(createUiDefFileJSONObject.parameters.outputs);
         outputsInCreateUiDef.forEach(output => {
-            parametersInTemplate.should.containEql(output);
+            parametersInTemplate.should.contain(output);
         });
     });
 
@@ -70,7 +67,7 @@ describe('createUiDef tests', () => {
             val.should.have.property('type');
             if (val.type.toLowerCase() == 'microsoft.common.textbox') {
                 val.should.have.property('constraints');
-                val.constraints.should.have.property('regex').and.not.empty();
+                expect(val.constraints, getErrorMessage(val)).to.have.property('regex');
             }
         });
 
@@ -80,8 +77,7 @@ describe('createUiDef tests', () => {
             Object.keys(val.elements.forEach(elementObj => {
                 if (elementObj.type.toLowerCase() == 'microsoft.common.textbox') {
                     elementObj.should.have.property('constraints');
-                    //expect(elementObj.constraints, 'elementObj at line number ').to.have.property('regex');
-                    elementObj.constraints.should.have.property('regex').and.not.empty();
+                    expect(elementObj.constraints, getErrorMessage(elementObj)).to.have.property('regex');
                 }
             }));
         });
@@ -90,6 +86,7 @@ describe('createUiDef tests', () => {
     it('location must be in outputs, and should match [location()]', () => {
         createUiDefFileJSONObject.should.have.property('parameters');
         createUiDefFileJSONObject.parameters.should.have.property('outputs');
-        createUiDefFileJSONObject.parameters.outputs.should.have.property('location', '[location()]');
+        createUiDefFileJSONObject.parameters.outputs.should.withMessage('location property missing in outputs').have.property('location')
+        createUiDefFileJSONObject.parameters.outputs.location.should.withMessage('location value should be [location()]').be.eql('[location()]');
     });
 });
