@@ -45,35 +45,43 @@ $pullrequest = "refs/pull/+(?<pullnumber>\w+?)/merge+"
 if($branch -match $pullrequest) {        
     $pullrequestid = $Matches.pullnumber;
     Write-Output "Pull request ID is $pullrequestid"
+    #get pull request information via API
+    $url= $projectUri + "DefaultCollection/$projectName/_apis/git/repositories/$repositoryName/pullRequests/$pullrequestid\?api-version=1.0-preview.1"
+
+    Write-Output "Getting info from $url"
+    $getpullrequest = Invoke-RestMethod -Uri $url -headers $headers -Method Get
+
+    #get sourcebranch and targetbranch ref
+    $sourceref = $getpullrequest.sourceRefName
+    $targetref = $getpullrequest.targetRefName
+
+    #get the branch name via regex
+    $branchref = "refs/heads/(?<realBranchname>.*)"
+    if($sourceref -match $branchref) {        
+        $sourcebranch = $Matches.realBranchname;
+        Write-Output "Real source branch is $sourcebranch"
+    }
+    else { 
+        Write-Output "Cannot find real source branch" 
+    }
+    if($targetref -match $branchref) {        
+        $targetbranch = $Matches.realBranchname;
+        Write-Output "Real target branch is $targetbranch"
+    }
+    else { 
+        Write-Output "Cannot find real target branch" 
+    }
 }
 else { 
-    Write-Output "Cannot find pull request ID" 
-}
-
-#get pull request information via API
-$url= $projectUri + "DefaultCollection/$projectName/_apis/git/repositories/$repositoryName/pullRequests/$pullrequestid\?api-version=1.0-preview.1"
-Write-Output "Getting info from $url"
-$getpullrequest = Invoke-RestMethod -Uri $url -headers $headers -Method Get
-
-#get sourcebranch and targetbranch ref
-$sourceref = $getpullrequest.sourceRefName
-$targetref = $getpullrequest.targetRefName
-
-#get the branch name via regex
-$branchref = "refs/heads/(?<realBranchname>.*)"
-if($sourceref -match $branchref) {        
-    $sourcebranch = $Matches.realBranchname;
-    Write-Output "Real source branch is $sourcebranch"
-}
-else { 
-    Write-Output "Cannot find real source branch" 
-}
-if($targetref -match $branchref) {        
-    $targetbranch = $Matches.realBranchname;
-    Write-Output "Real target branch is $targetbranch"
-}
-else { 
-    Write-Output "Cannot find real target branch" 
+  
+   $branchref = "refs/heads/(?<realBranchname>.*)"
+    if($branch -match $branchref) {        
+        $sourcebranch = $Matches.realBranchname;
+        Write-Output "Real source branch is $sourcebranch"
+    }
+     else { 
+        Write-Output "Cannot find real source branch" 
+    }
 }
 
 #set a variable "sourcebranch" to use it in another build task
