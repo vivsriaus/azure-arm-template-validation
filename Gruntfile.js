@@ -89,14 +89,6 @@ grunt.initConfig({
         }
     },
 
-    mochacli: {
-        options: {
-            reporter: 'spec',
-            bail: false
-        },
-        all: ['test/*.js']
-    },
-
     "tv4": { // validation of JSON files, with schema
         options: {
             multi: true,
@@ -122,7 +114,7 @@ grunt.initConfig({
 // Set up the specific tasks
 //======================================================================
 
-var taskList = ["fileExists", "stripJsonComments", "jsonlint", "mochacli", "tv4:validateUI"];
+var taskList = ["fileExists", "stripJsonComments", "jsonlint", "tv4:validateUI"];
 
 // both task tags are equivalent.  "test" left for compatability.
 grunt.task.registerTask("test", taskList);
