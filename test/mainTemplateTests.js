@@ -146,7 +146,7 @@ describe('mainTemplate tests', () => {
                             rType[0].toLowerCase() == 'microsoft.storage' ||
                             rType[0].toLowerCase() == 'microsoft.network' ||
                             rType[0].toLowerCase() == 'microsoft.resources';
-                        expect(cond, getErrorMessage(val, templateJSONObject.filepath, message)).to.be.true;
+                        expect(cond, getErrorMessage(val, templateJSONObject.filepath, message + '. The resource object: ' + JSON.stringify(val))).to.be.true;
                     }
                 });
             });
