@@ -45,7 +45,7 @@ describe('mainTemplate tests', () => {
                 templateObject.should.have.property('parameters');
                 var parametersInMainTemplate = Object.keys(templateObject.parameters);
                 parametersInMainTemplate.forEach(parameter => {
-                    if (!templateObject.parameters[parameter].defaultValue) {
+                    if (typeof(templateObject.parameters[parameter].defaultValue) === 'undefined') {
                         outputsInCreateUiDef.should.withMessage('in file:' + templateJSONObject.filename + '. outputs in createUiDefinition is missing the parameter ' + parameter).contain(parameter);
                     }
                 });
