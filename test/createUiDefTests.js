@@ -71,16 +71,20 @@ describe('createUiDef tests', () => {
             }
         });
 
-        Object.keys(createUiDefFileJSONObject.parameters.steps).forEach(obj => {
-            var val = createUiDefFileJSONObject.parameters.steps[obj];
+        // TODO revisit why certain steps elements return undefined
+        var steps = Array.from(Object.keys(createUiDefFileJSONObject.parameters.steps));
+        for (count = 0; count < steps.length; count++) {
+            var val = createUiDefFileJSONObject.parameters.steps[count];
             val.should.have.property('elements');
-            Object.keys(val.elements.forEach(elementObj => {
-                if (elementObj.type.toLowerCase() == 'microsoft.common.textbox') {
-                    elementObj.should.have.property('constraints');
-                    expect(elementObj.constraints, getErrorMessage(elementObj)).to.have.property('regex');
+            var elements = Array.from(Object.keys(val.elements));
+            for (count1 = 0; count1 < elements.length; count1++) {
+                var elementVal = val.elements[count1];
+                if (elementVal.type.toLowerCase() == 'microsoft.common.textbox') {
+                    elementVal.should.have.property('constraints');
+                    expect(elementVal.constraints, getErrorMessage(elementVal)).to.have.property('regex');
                 }
-            }));
-        });
+            }
+        }
     });
 
     it('location must be in outputs, and should match [location()]', () => {
