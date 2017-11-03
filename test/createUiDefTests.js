@@ -2,20 +2,20 @@ var assert = require('assert');
 var util = require('./util');
 const filesFolder = './';
 var path = require('path');
-var chai = require('chai');  
-var assert = chai.assert;    // Using Assert style
-var expect = chai.expect;    // Using Expect style
-var should = chai.should();  // Using Should style
+var chai = require('chai');
+var assert = chai.assert; // Using Assert style
+var expect = chai.expect; // Using Expect style
+var should = chai.should(); // Using Should style
 
 var folder = process.env.npm_config_folder || filesFolder;
 
 var createUiDefFileJSONObject = util.getCreateUiDefFile(folder).jsonObject;
 var createUiDefFile = util.getCreateUiDefFile(folder).file;
 
-chai.use(function (_chai, _) {
-  _chai.Assertion.addMethod('withMessage', function (msg) {
-    _.flag(this, 'message', msg);
-  });
+chai.use(function(_chai, _) {
+    _chai.Assertion.addMethod('withMessage', function(msg) {
+        _.flag(this, 'message', msg);
+    });
 });
 
 function getErrorMessage(obj) {
@@ -86,7 +86,7 @@ describe('createUiDef tests', () => {
     it('location must be in outputs, and should match [location()]', () => {
         createUiDefFileJSONObject.should.have.property('parameters');
         createUiDefFileJSONObject.parameters.should.have.property('outputs');
-        createUiDefFileJSONObject.parameters.outputs.should.withMessage('location property missing in outputs').have.property('location')
-        createUiDefFileJSONObject.parameters.outputs.location.should.withMessage('location value should be [location()]').be.eql('[location()]');
+        createUiDefFileJSONObject.parameters.outputs.should.withMessage('location property missing in outputs').have.property('location');
+        createUiDefFileJSONObject.parameters.outputs.location.toLowerCase().should.withMessage('location value should be [location()]').be.eql('[location()]');
     });
 });
