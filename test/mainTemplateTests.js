@@ -40,15 +40,13 @@ describe('mainTemplate tests', () => {
             var outputsInCreateUiDef = Object.keys(createUiDefJSONObject.parameters.outputs);
 
             // validate each parameter in main template has a value in outputs
-            templateFileJSONObjects.forEach(templateJSONObject => {
-                var templateObject = templateJSONObject.value;
-                templateObject.should.have.property('parameters');
-                var parametersInMainTemplate = Object.keys(templateObject.parameters);
-                parametersInMainTemplate.forEach(parameter => {
-                    if (typeof(templateObject.parameters[parameter].defaultValue) === 'undefined') {
-                        outputsInCreateUiDef.should.withMessage('in file:' + templateJSONObject.filename + '. outputs in createUiDefinition is missing the parameter ' + parameter).contain(parameter);
-                    }
-                });
+            var templateObject = mainTemplateFileJSONObject;
+            templateObject.should.have.property('parameters');
+            var parametersInMainTemplate = Object.keys(templateObject.parameters);
+            parametersInMainTemplate.forEach(parameter => {
+                if (typeof(templateObject.parameters[parameter].defaultValue) === 'undefined') {
+                    outputsInCreateUiDef.should.withMessage('in file:mainTemplate.json. outputs in createUiDefinition is missing the parameter ' + parameter).contain(parameter);
+                }
             });
         });
 
@@ -91,14 +89,12 @@ describe('mainTemplate tests', () => {
         });
 
         it('the template must not contain any unused parameters', () => {
-            templateFileJSONObjects.forEach(templateJSONObject => {
-                var templateObject = templateJSONObject.value;
-                templateObject.should.have.property('parameters');
-                var parametersInMainTemplate = Object.keys(templateObject.parameters);
-                parametersInMainTemplate.forEach(parameter => {
-                    var paramString = 'parameters(\'' + parameter + '\')';
-                    JSON.stringify(templateObject).should.withMessage('file:' + templateJSONObject.filename + '. unused parameter ' + parameter + ' in mainTemplate').contain(paramString);
-                });
+            var templateObject = mainTemplateFileJSONObject;
+            templateObject.should.have.property('parameters');
+            var parametersInMainTemplate = Object.keys(templateObject.parameters);
+            parametersInMainTemplate.forEach(parameter => {
+                var paramString = 'parameters(\'' + parameter + '\')';
+                JSON.stringify(templateObject).should.withMessage('file:mainTemplate.json. unused parameter ' + parameter + ' in mainTemplate').contain(paramString);
             });
         });
     });
