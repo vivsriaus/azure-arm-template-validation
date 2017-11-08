@@ -4,7 +4,7 @@
   "description": "A package file for developer depenedencies when validating solution templates",
   "scripts": {
     "test": "grunt test",
-    "mochaTest": "mocha"
+    "mochaTest": "mocha -r mocha-clean"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
@@ -23,6 +23,7 @@
     "line-column": "^1.0.2",
     "mocha": "^2.3.3",
     "recursive-readdir": "^2.2.1",
-    "should": "^13.1.2"
+    "should": "^13.1.2",
+    "mocha-clean": "^1.0.0"
   }
 }
