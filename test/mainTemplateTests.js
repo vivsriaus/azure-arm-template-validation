@@ -40,11 +40,10 @@ describe('mainTemplate tests', () => {
             var outputsInCreateUiDef = Object.keys(createUiDefJSONObject.parameters.outputs);
 
             // validate each parameter in main template has a value in outputs
-            var templateObject = mainTemplateFileJSONObject;
-            templateObject.should.have.property('parameters');
-            var parametersInMainTemplate = Object.keys(templateObject.parameters);
+            mainTemplateFileJSONObject.should.have.property('parameters');
+            var parametersInMainTemplate = Object.keys(mainTemplateFileJSONObject.parameters);
             parametersInMainTemplate.forEach(parameter => {
-                if (typeof(templateObject.parameters[parameter].defaultValue) === 'undefined') {
+                if (typeof(mainTemplateFileJSONObject.parameters[parameter].defaultValue) === 'undefined') {
                     outputsInCreateUiDef.should.withMessage('in file:mainTemplate.json. outputs in createUiDefinition is missing the parameter ' + parameter).contain(parameter);
                 }
             });
@@ -68,33 +67,29 @@ describe('mainTemplate tests', () => {
         });
 
         // TODO: should location prop in resources all be set to param('location') ?
-        it('a parameter named "location" must exists and must be used on all resource "location" properties', () => {
-            templateFileJSONObjects.forEach(templateJSONObject => {
-                var templateObject = templateJSONObject.value;
-                templateObject.should.have.property('parameters');
-                templateObject.parameters.should.have.property('location');
+        it('a parameter named "location" must exist and must be used on all resource "location" properties', () => {
+            mainTemplateFileJSONObject.should.withMessage('file:mainTemplate.json is missing parameters property').have.property('parameters');
+            mainTemplateFileJSONObject.parameters.should.withMessage('file:mainTemplate.json is missing location property in parameters').have.property('location');
 
-                // TODO: if location default value exists, it should be set to resourceGroup.location(). Correct?
+            // TODO: if location default value exists, it should be set to resourceGroup.location(). Correct?
 
-                // each resource location should be "location": "[parameters('location')]"
-                var expectedLocation = '[parameters(\'location\')]';
-                var message = 'in file:' + templateJSONObject.filename + ' should have location set to [parameters(\'location\')]';
-                Object.keys(templateObject.resources).forEach(resource => {
-                    var val = templateObject.resources[resource];
-                    if (val.location) {
-                        val.location.split(' ').join('').should.withMessage(getErrorMessage(val, templateJSONObject.filepath, message)).be.eql(expectedLocation);
-                    }
-                });
+            // each resource location should be "location": "[parameters('location')]"
+            var expectedLocation = '[parameters(\'location\')]';
+            var message = 'in file:mainTemplate.json should have location set to [parameters(\'location\')]';
+            Object.keys(mainTemplateFileJSONObject.resources).forEach(resource => {
+                var val = mainTemplateFileJSONObject.resources[resource];
+                if (val.location) {
+                    val.location.split(' ').join('').should.withMessage(getErrorMessage(val, mainTemplateFile, message)).be.eql(expectedLocation);
+                }
             });
         });
 
         it('the template must not contain any unused parameters', () => {
-            var templateObject = mainTemplateFileJSONObject;
-            templateObject.should.have.property('parameters');
-            var parametersInMainTemplate = Object.keys(templateObject.parameters);
+            mainTemplateFileJSONObject.should.have.property('parameters');
+            var parametersInMainTemplate = Object.keys(mainTemplateFileJSONObject.parameters);
             parametersInMainTemplate.forEach(parameter => {
                 var paramString = 'parameters(\'' + parameter + '\')';
-                JSON.stringify(templateObject).should.withMessage('file:mainTemplate.json. unused parameter ' + parameter + ' in mainTemplate').contain(paramString);
+                JSON.stringify(mainTemplateFileJSONObject).should.withMessage('file:mainTemplate.json. unused parameter ' + parameter + ' in mainTemplate').contain(paramString);
             });
         });
     });
