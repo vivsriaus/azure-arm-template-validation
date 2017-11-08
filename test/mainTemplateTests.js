@@ -88,8 +88,8 @@ describe('mainTemplate tests', () => {
             mainTemplateFileJSONObject.should.have.property('parameters');
             var parametersInMainTemplate = Object.keys(mainTemplateFileJSONObject.parameters);
             parametersInMainTemplate.forEach(parameter => {
-                var paramString = 'parameters(\'' + parameter + '\')';
-                JSON.stringify(mainTemplateFileJSONObject).should.withMessage('file:mainTemplate.json. unused parameter ' + parameter + ' in mainTemplate').contain(paramString);
+                var paramString = 'parameters(\'' + parameter.toLowerCase() + '\')';
+                JSON.stringify(mainTemplateFileJSONObject).toLocaleLowerCase().should.withMessage('file:mainTemplate.json. unused parameter ' + parameter + ' in mainTemplate').contain(paramString);
             });
         });
     });
