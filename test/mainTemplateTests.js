@@ -26,8 +26,8 @@ function getErrorMessage(obj, file, message) {
     return 'json object with \'name\' at line number ' + util.getPosition(obj, file) + ' ' + message;
 }
 
-describe('mainTemplate tests', () => {
-    describe('mainTemplate parameters tests', () => {
+describe('mainTemplate.json file - ', () => {
+    describe('parameters tests - ', () => {
         it('each parameter that does not have a defaultValue, must have a corresponding output in createUIDef', () => {
             var currentDir = path.dirname(mainTemplateFile);
             // assert create ui def exists in the above directory
@@ -78,7 +78,7 @@ describe('mainTemplate tests', () => {
             var message = 'in file:mainTemplate.json should have location set to [parameters(\'location\')]';
             Object.keys(mainTemplateFileJSONObject.resources).forEach(resource => {
                 var val = mainTemplateFileJSONObject.resources[resource];
-                if (val.location) {
+                if (val.location && val.type.toLowerCase() != 'microsoft.resources/deployments') {
                     val.location.split(' ').join('').should.withMessage(getErrorMessage(val, mainTemplateFile, message)).be.eql(expectedLocation);
                 }
             });
@@ -89,12 +89,12 @@ describe('mainTemplate tests', () => {
             var parametersInMainTemplate = Object.keys(mainTemplateFileJSONObject.parameters);
             parametersInMainTemplate.forEach(parameter => {
                 var paramString = 'parameters(\'' + parameter.toLowerCase() + '\')';
-                JSON.stringify(mainTemplateFileJSONObject).toLocaleLowerCase().should.withMessage('file:mainTemplate.json. unused parameter ' + parameter + ' in mainTemplate').contain(paramString);
+                JSON.stringify(mainTemplateFileJSONObject).toLowerCase().should.withMessage('file:mainTemplate.json. unused parameter ' + parameter + ' in mainTemplate').contain(paramString);
             });
         });
     });
 
-    describe('mainTemplate resources tests', () => {
+    describe('resources tests - ', () => {
         it('resourceGroup().location must not be used in the solution template except as a defaultValue for the location parameter', () => {
             templateFileJSONObjects.forEach(templateJSONObject => {
                 var templateObject = templateJSONObject.value;

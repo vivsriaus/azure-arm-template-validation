@@ -22,17 +22,18 @@ function getErrorMessage(obj) {
     return 'json object with \'name\' at line number ' + util.getPosition(obj, createUiDefFile) + ' is missing the regex property under constraints';
 }
 
-describe('createUiDef tests', () => {
+describe('createUiDefinition.json file - ', () => {
+    var expectedSchemaVal = 'https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#';
     it('must have a schema property', () => {
-        createUiDefFileJSONObject.should.have.property('$schema');
+        createUiDefFileJSONObject.should.withMessage('$schema property is expected, and it\'s value should be ' + expectedSchemaVal).have.property('$schema', expectedSchemaVal);
     });
 
-    it('handler must match schema', () => {
-        createUiDefFileJSONObject.should.have.property('handler', 'Microsoft.Compute.MultiVm');
+    it('handler property value should be \'Microsoft.Compute.MultiVm\'', () => {
+        createUiDefFileJSONObject.should.withMessage('handler property is expected, and it\'s value should be \'Microsoft.Compute.MultiVm\'').have.property('handler', 'Microsoft.Compute.MultiVm');
     });
 
-    it('version must match schema version', () => {
-        createUiDefFileJSONObject.should.have.property('$schema');
+    it('version property value must match schema version', () => {
+        assert(typeof(createUiDefFileJSONObject.$schema) !== 'undefined', '$schema property is missing in createUiDefinition.json');
         var createUiDefSchemaVersion = createUiDefFileJSONObject.$schema.match('schema.management.azure.com/schemas/(.*)/CreateUIDefinition')[1]
         createUiDefFileJSONObject.should.have.property('version', createUiDefSchemaVersion);
     });
