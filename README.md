@@ -28,3 +28,7 @@ To run just the tests for template files (mainTemplate.json and any nested templ
 ```
 npm --folder=jira-data-center-jira-software run template
 ```
+
+## Other miscellaneous files in this repository
+
+buildpackage.zip, Gruntfile.js, CreateBuildPackage.ps1 and SetBranchNameVariable.ps1 files are NOT required to run tests locally. These are files used by an internal VSTS repository to run the mocha tests as part of a CI pipeline, the scope of which is beyond the solution template validation repository.
