@@ -4,7 +4,9 @@
   "description": "A package file for developer depenedencies when validating solution templates",
   "scripts": {
     "test": "grunt test",
-    "mochaTest": "mocha -r mocha-clean"
+    "all": "mocha -r mocha-clean --reporter mochawesome --reporter-options reportFilename=testReport",
+    "createUi": "mocha test\\createUiDefTests.js -r mocha-clean --reporter mochawesome --reporter-options reportFilename=createUiDefTestReport",
+    "template": "mocha test\\mainTemplateTests.js -r mocha-clean --reporter mochawesome --reporter-options reportFilename=mainTemplateTestReport"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
@@ -24,6 +26,7 @@
     "mocha": "^2.3.3",
     "recursive-readdir": "^2.2.1",
     "should": "^13.1.2",
+    "mochawesome": "^2.3.1",
     "mocha-clean": "^1.0.0"
   }
 }
