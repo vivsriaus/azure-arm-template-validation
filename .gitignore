@@ -1,0 +1,6 @@
+# mochawesome report
+mochawesome-report/
+
+# Others
+node_modules/
+npm-debug.log
