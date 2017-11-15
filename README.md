@@ -2,7 +2,7 @@
 
 This repository contains mocha tests, that runs static checks against a solution template folder containing mainTemplate.json, createUiDefinition.json and other template artifacts like nested templates, etc.
 
-## How to run mocha tests
+## Running the tests
 
 - git clone https://github.com/vivsriaus/solutiontemplatevalidation
 - npm install
