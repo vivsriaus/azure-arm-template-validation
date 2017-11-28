@@ -7,6 +7,8 @@ var assert = chai.assert; // Using Assert style
 var expect = chai.expect; // Using Expect style
 var should = chai.should(); // Using Should style
 
+require('it-each')({ testPerIteration: true });
+
 var folder = process.env.npm_config_folder || filesFolder;
 
 var mainTemplateFileJSONObject = util.getMainTemplateFile(folder).jsonObject;
@@ -15,6 +17,7 @@ var createUiDefFileJSONObject = util.getCreateUiDefFile(folder).jsonObject;
 var createUiDefFile = util.getCreateUiDefFile(folder).file;
 var templateFiles = util.getTemplateFiles(folder).files;
 var templateFileJSONObjects = util.getTemplateFiles(folder).fileJSONObjects;
+var parametersInTemplate = Object.keys(mainTemplateFileJSONObject.parameters);
 
 chai.use(function(_chai, _) {
     _chai.Assertion.addMethod('withMessage', function(msg) {
@@ -28,25 +31,18 @@ function getErrorMessage(obj, file, message) {
 
 describe('mainTemplate.json file - ', () => {
     describe('parameters tests - ', () => {
-        it('each parameter that does not have a defaultValue, must have a corresponding output in createUIDef', () => {
-            var currentDir = path.dirname(mainTemplateFile);
-            // assert create ui def exists in the above directory
-            util.assertCreateUiDefExists(currentDir);
-
-            // get the corresponding create ui def
-            var createUiDefJSONObject = util.getCreateUiDefFile(currentDir).jsonObject;
-
-            // get output keys in main template
-            var outputsInCreateUiDef = Object.keys(createUiDefJSONObject.parameters.outputs);
-
-            // validate each parameter in main template has a value in outputs
+        it('must have parameters', () => {
             mainTemplateFileJSONObject.should.have.property('parameters');
-            var parametersInMainTemplate = Object.keys(mainTemplateFileJSONObject.parameters);
-            parametersInMainTemplate.forEach(parameter => {
-                if (typeof(mainTemplateFileJSONObject.parameters[parameter].defaultValue) === 'undefined') {
-                    outputsInCreateUiDef.should.withMessage('in file:mainTemplate.json. outputs in createUiDefinition is missing the parameter ' + parameter).contain(parameter);
-                }
-            });
+        });
+
+        var outputsInCreateUiDef = Object.keys(createUiDefFileJSONObject.parameters.outputs);
+        var paramsWithoutDefaultVal = parametersInTemplate.filter(function(param) {
+            return typeof(mainTemplateFileJSONObject.parameters[param].defaultValue) === 'undefined';
+        });
+
+        it.each(paramsWithoutDefaultVal, 'parameter %s, which does not have a default value, must be present in createUiDef outputs', ['element'], function(element, next) {
+            outputsInCreateUiDef.should.withMessage('in file:mainTemplate.json. outputs in createUiDefinition is missing the parameter ' + element).contain(element);
+            next();
         });
 
         // TODO: should it be non null, or should all secure strings not contain default value?
