@@ -15,6 +15,10 @@ var createUiDefFileJSONObject = util.getCreateUiDefFile(folder).jsonObject;
 var createUiDefFile = util.getCreateUiDefFile(folder).file;
 var mainTemplateFileJSONObject = util.getMainTemplateFile(folder).jsonObject;
 var parametersInTemplate = Object.keys(mainTemplateFileJSONObject.parameters);
+// convert to lowercase
+for (var i in parametersInTemplate) {
+    parametersInTemplate[i] = parametersInTemplate[i].toLowerCase();
+}
 
 chai.use(function(_chai, _) {
     _chai.Assertion.addMethod('withMessage', function(msg) {
@@ -50,7 +54,7 @@ describe('createUiDefinition.json file - ', () => {
 
     var outputsInCreateUiDef = Object.keys(createUiDefFileJSONObject.parameters.outputs);
     it.each(outputsInCreateUiDef, 'output %s must be present in mainTemplate parameters', ['element'], function(element, next) {
-        parametersInTemplate.should.contain(element);
+        parametersInTemplate.should.contain(element.toLowerCase());
         next();
     });
 
