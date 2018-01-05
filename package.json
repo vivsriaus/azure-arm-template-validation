@@ -4,7 +4,6 @@
     "description": "A package file for developer depenedencies when validating solution templates",
     "scripts": {
         "test": "grunt test",
-        "mochaTest": "mocha -r mocha-clean",
         "validateJson": "mocha test\\validateJsonTests.js -r mocha-clean --reporter mochawesome --reporter-options reportFilename=validateJsonReport",
         "all": "mocha -r mocha-clean --reporter mochawesome --reporter-options reportFilename=testReport",
         "createUi": "mocha test\\createUiDefTests.js -r mocha-clean --reporter mochawesome --reporter-options reportFilename=createUiDefTestReport",
